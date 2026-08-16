@@ -1,0 +1,147 @@
+[EN]
+Assignment name : bigint
+Expected files : bigint.hpp, bigint.cpp
+--------------------------------------------------------------------------------
+In computer science a bignum is an object representing an arbitrary precision
+number, this is useful when you want to store a number bigger than SIZE_MAX
+without any loss of precision. This is often achieved by storing an array or a
+string containing the different "parts" of the number.
+Create a class called bigint that will store an arbitrary precision unsigned
+integer.
+Your class must support addition, comparison and "digitshift" (like bitshift but
+instead of shifting the bits you will shift the digits in base 10, e.g.:
+(42 << 3 == 42000) and (1337 >> 2 == 13)).
+Your bigint must be printable with the << operator (in base 10) and the output
+should not contain any leading zeros.
+You will find a main in this directory that must work with your class
+
+[TR]
+Bilgisayar bilimlerinde bignum, keyfi bir hassasiyetteki sayıyı temsil eden bir nesnedir.
+Bu, herhangi bir hassasiyet kaybı olmadan SIZE_MAX değerinden büyük bir sayıyı depolamak istediğinizde kullanışlıdır.
+Bu genellikle sayının farklı "kısımlarını" içeren bir dizi veya dize depolayarak elde edilir.
+
+keyfi bir hassasiyetteki işaretsiz tamsayıyı depolayacak bigint adlı bir sınıf oluşturun.
+Sınıfınız toplama, karşılaştırma ve "rakam kaydırma" işlemlerini desteklemelidir
+(bit kaydırma gibi, ancak bitleri kaydırmak yerine 10 tabanındaki rakamları kaydırırsınız
+örneğin: (42 << 3 == 42000) ve (1337 >> 2 == 13)).
+
+bigint değeriniz << operatörüyle (10 tabanında) yazdırılabilir olmalı ve çıktıda başta sıfır bulunmamalıdır.
+
+Bu dizinde, sınıfınızla uyumlu olması gereken bir main bulacaksınız.
+
+[SUBJECT MAIN]
+#include "bigint.hpp"
+#include <iostream>
+
+int main()
+{
+    const bigint a(42);
+    bigint b(21), c, d(1337), e(d);
+
+    std::cout << "a = " << a << std::endl;
+    std::cout << "b = " << b << std::endl;
+    std::cout << "c = " << c << std::endl;
+    std::cout << "d = " << d << std::endl;
+    std::cout << "e = " << e << std::endl;
+
+    std::cout << "a + b = " << a + b << std::endl;
+    std::cout << "(c += a) = " << (c += a) << std::endl;
+
+    std::cout << "b = " << b << std::endl;
+    std::cout << "++b = " << ++b << std::endl;
+    std::cout << "b++ = " << b++ << std::endl;
+
+    std::cout << "(b << 10) + 42 = " << ((b << 10) + 42) << std::endl;
+    std::cout << "(d <<= 4) = " << (d <<= 4) << std::endl;
+    std::cout << "(d >>= 2) = " << (d >>= (const bigint)2) << std::endl;
+
+    std::cout << "a =" << a << std::endl;
+    std::cout << "d =" << d << std::endl;
+
+    std::cout << "(d < a) = " << (d < a) << std::endl;
+    std::cout << "(d <= a) = " << (d <= a) << std::endl;
+    std::cout << "(d > a) = " << (d > a) << std::endl;
+    std::cout << "(d >= a) = " << (d >= a) << std::endl;
+    std::cout << "(d == a) = " << (d == a) << std::endl;
+    std::cout << "(d != a) = " << (d != a) << std::endl;
+}
+Assigment name: Polyset
+Expected File: searchable_array_bag.cpp, searchable_array_bag.hpp,
+searchable_tree_bg.cpp, searchable_tree_bag.hpp, set.cpp, set.hpp
+
+You will find in this directory some classes:
+- bag: an abstract class representing a bag
+- searchable_bag: an abstract class representing a bag with the ability to
+	search in it.
+- array_bag: an implementation of a bag with an array an underlying data
+	structure.
+- tree_bag: an implementation of a bag with a binary search tree as underlying
+	data structure.
+
+If you don't know what is a set or a bag (shame!) you can read the attached
+file shame.en.txt
+
+First Part:
+Since a bag without a searching function isn't very useful, implement two
+classes searchable_array_bag and searchable_tree_bag, that will inherit from
+array_bag and tree_bag and implement the searchable bag abstract class.
+
+Second Part:
+Implement the class set that will wrap a searchable_bag and turn it into a set.
+You will find in this dir a main that must compile with your code.
+All classes should be under orthodox canonical form. Don't forget the const.
+Assignement name: vect2
+Expected files: vect2.cpp, vect2.hpp
+-------------------------------------------------------------------------------------------
+
+Create a class vect2 representing a mathematical vector of dimension 2 containing ints.
+
+It must support addition, substraction and multiplication by a scalar (such as the expression (vect2(2,2) * 2 == vect2(4,4)) is true).
+
+the operator [] can be used to access the component of your vector (with 0 and 1), no bound checking is required.
+
+Your function must be printable with the << operator such as:
+        std::cout << v << std::endl;
+produce the same output as:
+        std::cout << "{" << v[0] << ", " << v[1] << "}" << std::endl;
+
+You will find a main in this directory that must work with your class.
+
+#include "vect2.hpp"
+#include <iostream>
+
+int main()
+{
+    vect2 v1; // 0, 0
+    vect2 v2(1, 2); // 1, 2
+    const vect2 v3(v2); // 1, 2
+    vect2 v4 = v2; // 1, 2
+
+    std::cout << "v1: " << v1 << std::endl;
+    std::cout << "v1: " << "{" << v1[0] << ", " << v1[1] << "}" << std::endl;
+    std::cout << "v2: " << v2 << std::endl;
+    std::cout << "v3: " << v3 << std::endl;
+    std::cout << "v4: " << v4 << std::endl;
+    std::cout << v4++ << std::endl; // 2, 3
+    std::cout << ++v4 << std::endl; // 3, 4
+    std::cout << v4-- << std::endl; // 2, 3
+    std::cout << --v4 << std::endl; // 1, 2
+    v2 += v3; // 2, 4
+    v1 -= v2; // -2, -4
+    v2 = v3 + v3 *2; // 3, 6
+    v2 = 3 * v2; // 9, 18
+    v2 += v2 += v3; // 20, 40
+    v1 *= 42; // -84, -168
+    v1 = v1 - v1 +v1;
+    std::cout << "v1: " << v1 << std::endl;
+    std::cout << "v2: " << v2 << std::endl;
+    std::cout << "-v2: " << -v2 << std::endl;
+    std::cout << "v1[1]: " << v1[1] << std::endl;
+    v1[1] = 12;
+    std::cout << "v1[1]: " << v1[1] << std::endl;
+    std::cout << "v3[1]: " << v3[1] << std::endl;
+    std::cout << "v1 == v3: " << (v1 == v3) << std::endl;
+    std::cout << "v1 == v1: " << (v1 == v1) << std::endl;
+    std::cout << "v1 != v3: " << (v1 != v3) << std::endl;
+    std::cout << "v1 != v1: " << (v1 != v1) << std::endl;
+}
