@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Glossary and Index</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+
+<h1>Glossary and Index
+<span class="cluster-tag">Source of truth: every term below is defined exactly once here. Lessons link to this page instead of redefining a term.</span>
+</h1>
+
+<h2>Lesson index</h2>
+<ol>
+<li><a href="../lessons/0001-construction.html">Construction</a> — default, parameterised, copy constructor; direct-init vs. copy-init</li>
+<li><a href="../lessons/0002-operator-bracket.html">operator[]</a> — element access, const and non-const overloads, reference return</li>
+<li><a href="../lessons/0003-stream-output.html">operator&lt;&lt;, stream form</a> — free-function requirement, printing</li>
+<li><a href="../lessons/0004-binary-arithmetic.html">Binary arithmetic: +, -, *</a> — member vs. free function, commutative scalar multiply</li>
+<li><a href="../lessons/0005-unary-minus.html">Unary operator-</a> — same token as binary minus, different overload</li>
+<li><a href="../lessons/0006-compound-assignment.html">Compound assignment: +=, -=, *=</a> — modify-in-place, reference return, chaining</li>
+<li><a href="../lessons/0007-increment-decrement.html">++ and --, prefix vs. postfix</a> — the dummy-int disambiguation trick</li>
+<li><a href="../lessons/0008-comparison.html">Comparison operators</a> — ==, !=, &lt;, &lt;=, &gt;, &gt;=, none derived from another</li>
+<li><a href="../lessons/0009-const-correctness.html">const, three positions</a> — variable, reference parameter, member function</li>
+<li><a href="../lessons/0010-copy-assignment-and-canonical-form.html">operator= and the four-function set</a> — orthodox canonical form</li>
+<li><a href="../lessons/0011-inheritance-and-abstract-classes.html">Inheritance and abstract classes</a> — polyset-specific: base classes, pure virtual, override</li>
+</ol>
+
+<h2>Terms — construction</h2>
+
+<h3 id="constructor">constructor</h3>
+<p>A function with the same name as the class, no return type, that runs exactly once when an object of that class is created. Lesson: <a href="../lessons/0001-construction.html">1</a>.</p>
+
+<h3 id="default-constructor">default constructor</h3>
+<p>A constructor taking zero arguments. Slot: <code>Type name;</code>. The compiler generates one automatically only if the class declares no constructors of its own. Lesson: <a href="../lessons/0001-construction.html">1</a>.</p>
+
+<h3 id="direct-initialization">direct-initialization</h3>
+<p>Constructing an object with arguments in parentheses directly after the variable name: <code>Type name(args);</code>. Lesson: <a href="../lessons/0001-construction.html">1</a>.</p>
+
+<h3 id="copy-initialization">copy-initialization</h3>
+<p>Constructing an object using <code>=</code> at the point of declaration: <code>Type name = existing;</code>. This calls a constructor, not <code>operator=</code>, because <code>name</code> does not exist yet at the point <code>=</code> is written. Lesson: <a href="../lessons/0001-construction.html">1</a>.</p>
+
+<h3 id="copy-constructor">copy constructor</h3>
+<p>A constructor whose single parameter is a reference to an existing object of the same class. Duplicates the existing object's member values into the new object. Reachable from both direct-initialization and copy-initialization syntax — one function, two call slots. Lesson: <a href="../lessons/0001-construction.html">1</a>.</p>
+
+<h2>Terms — functions and operators</h2>
+
+<h3 id="member-function">member function</h3>
+<p>A function declared inside a class body. Called either as <code>object.name(args)</code>, or implicitly through operator syntax like <code>x[i]</code> or <code>x + y</code> when the operator is declared as a member. The left-hand object of an operator call is received implicitly, not as an explicit parameter. Lessons: <a href="../lessons/0002-operator-bracket.html">2</a>, <a href="../lessons/0004-binary-arithmetic.html">4</a>.</p>
+
+<h3 id="free-function">free function</h3>
+<p>A function declared outside any class. For an operator, this means both operands are explicit parameters — required whenever the left operand's type cannot have a member function added to it (a built-in type, or a type like <code>std::ostream</code> that you did not write). Lessons: <a href="../lessons/0003-stream-output.html">3</a>, <a href="../lessons/0004-binary-arithmetic.html">4</a>.</p>
+
+<h3 id="reference">reference</h3>
+<p>An alternate name for an existing variable, not a copy of it. Declared with <code>&amp;</code>. Used as a parameter type to avoid copying (<code>const Type&amp;</code>), and as a return type to hand back the actual object rather than a copy (<code>Type&amp;</code>) — required for chained assignment/compound-assignment expressions. Lessons: <a href="../lessons/0002-operator-bracket.html">2</a>, <a href="../lessons/0006-compound-assignment.html">6</a>.</p>
+
+<h2>Terms — const</h2>
+
+<h3 id="const-variable">const (on a variable)</h3>
+<p>Slot: <code>const Type name(...);</code>. The variable cannot be reassigned after construction, and only functions marked const (see below) may be called on it. Lesson: <a href="../lessons/0009-const-correctness.html">9</a>.</p>
+
+<h3 id="const-parameter">const (on a reference parameter)</h3>
+<p>Slot: <code>(const Type&amp; name)</code>. The function promises not to modify what the reference refers to; required to accept const arguments. Lesson: <a href="../lessons/0009-const-correctness.html">9</a>.</p>
+
+<h3 id="const-member-function">const (on a member function)</h3>
+<p>Slot: <code>ReturnType name(...) const;</code> — the keyword appears after the parameter list. Promises the function does not modify the object it is called on. Required for a member function to be callable on a const object at all. Lesson: <a href="../lessons/0009-const-correctness.html">9</a>.</p>
+
+<h2>Terms — copying and lifetime</h2>
+
+<h3 id="copy-assignment-operator">copy assignment operator</h3>
+<p>The overload of <code>operator=</code> invoked when assigning to an object that already exists: <code>existing = other;</code>. Distinct from copy-initialization (which constructs a new object and never calls this function). Returns a reference to <code>*this</code>. Lesson: <a href="../lessons/0010-copy-assignment-and-canonical-form.html">10</a>.</p>
+
+<h3 id="destructor">destructor</h3>
+<p>Slot: <code>~Type();</code>. Runs automatically when an object's lifetime ends. No parameters, no return type, one per class. Lesson: <a href="../lessons/0010-copy-assignment-and-canonical-form.html">10</a>.</p>
+
+<h3 id="orthodox-canonical-form">orthodox canonical form</h3>
+<p>42-specific term (not standard C++ terminology — the closest standard equivalent is the "Rule of Three"). A class declaring all four of: default constructor, copy constructor, copy assignment operator, destructor. Required explicitly by polyset's subject text. Lesson: <a href="../lessons/0010-copy-assignment-and-canonical-form.html">10</a>.</p>
+
+<h2>Terms — inheritance (polyset)</h2>
+
+<h3 id="base-class">base class</h3>
+<p>The class named after the colon in a derived class's declaration: <code>class Derived : public Base { ... };</code>. Its non-private members become available inside <code>Derived</code>. Lesson: <a href="../lessons/0011-inheritance-and-abstract-classes.html">11</a>.</p>
+
+<h3 id="pure-virtual-function">pure virtual function</h3>
+<p>Slot: <code>virtual ReturnType name(...) = 0;</code>. Declares that the function must exist in any concrete (constructible) derived class, but provides no implementation itself. A class with at least one unimplemented pure virtual function is abstract and cannot be constructed directly. Lesson: <a href="../lessons/0011-inheritance-and-abstract-classes.html">11</a>.</p>
+
+<h3 id="override">override</h3>
+<p>Slot: <code>ReturnType name(...) override;</code>, written in a derived class. Not required by the language, but should always be present — it makes the compiler check that this function actually matches a virtual function declared in a base class. Lesson: <a href="../lessons/0011-inheritance-and-abstract-classes.html">11</a>.</p>
+
+<h3 id="base-class-initializer">base class constructor call</h3>
+<p>Slot: <code>Derived::Derived(args) : Base(args) { }</code>, the colon appearing after the parameter list, before the function body. Specifies which base class constructor runs before the derived class's own constructor body. Lesson: <a href="../lessons/0011-inheritance-and-abstract-classes.html">11</a>.</p>
+
+<div class="nav">
+<a href="../lessons/0001-construction.html">Start at Lesson 1</a>
+</div>
+
+</body>
+</html>

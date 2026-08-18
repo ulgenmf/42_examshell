@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 3 — operator<<, stream form</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+
+<h1>operator&lt;&lt;, stream-insertion form
+<span class="cluster-tag">Cluster: printing an object — 1 rule, applies identically to vect2 and bigint</span>
+</h1>
+
+<p>
+Source: vect2 main, <code>std::cout &lt;&lt; v1 &lt;&lt; std::endl;</code>. Same shape in
+bigint main: <code>std::cout &lt;&lt; "a = " &lt;&lt; a &lt;&lt; std::endl;</code>.
+</p>
+
+<h2>Why this cannot be a member function</h2>
+<p>
+For a member function, the object to the left of the dot (the one that would receive
+the call, e.g. <code>a.operator&lt;&lt;(...)</code>) is the left-hand operand. But in
+<code>std::cout &lt;&lt; a</code>, the left-hand operand is <code>std::cout</code>, an
+<code>std::ostream</code> — a type you did not write and cannot add a member function to.
+</p>
+
+<div class="slot">
+<span class="label">Slot: free function, not inside the class</span>
+<code>std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, const vect2&amp; v);</code>
+<strong>Rule:</strong> this is a
+<span class="term" title="A function declared outside any class, taking all its operands as explicit parameters — as opposed to a member function, which receives the left-hand operand implicitly as the object it's called on.">free function</span> —
+declared outside the class, taking both sides of <code>&lt;&lt;</code> as explicit
+parameters. First parameter is the stream (by reference — streams cannot be copied),
+second is the object to print (by const reference — printing does not need to modify
+it and should not copy it). Return type <code>std::ostream&amp;</code>, returning
+<code>os</code>, is what makes chained output like
+<code>std::cout &lt;&lt; "a: " &lt;&lt; a &lt;&lt; std::endl;</code> work — each
+<code>&lt;&lt;</code> call needs to hand back a stream for the next
+<code>&lt;&lt;</code> to act on.
+</div>
+
+<div class="collision">
+<span class="label">Contrast: this is a different operator&lt;&lt; from bigint's digit-shift</span>
+bigint's subject requires <code>operator&lt;&lt;</code> to also mean "shift digits":
+<code>42 &lt;&lt; 3 == 42000</code>. That is a completely separate overload — different
+parameter types (<code>bigint &lt;&lt; int</code>, both are bigint/int, not
+ostream/bigint), so the compiler picks between them purely by matching parameter
+types, same as any other overloaded function name. <code>&lt;&lt;</code> the symbol
+carries no fixed meaning by itself; each overload you declare gives it one meaning for
+one specific pair of operand types.
+</div>
+
+<h2>What you write</h2>
+<p>
+In <code>vect2/vect2.hpp</code>, outside the <code>class vect2 { ... };</code> block:
+declare the free function above. In <code>vect2/vect2.cpp</code>: implement it using
+<code>operator[]</code> from lesson 2 to read the two components. Match the required
+format exactly: <code>std::cout &lt;&lt; v</code> must print the same characters as
+<code>std::cout &lt;&lt; "{" &lt;&lt; v[0] &lt;&lt; ", " &lt;&lt; v[1] &lt;&lt; "}"</code>
+(subject's own equivalence check).
+</p>
+
+<div class="primary-source">
+<span class="label">Primary source</span><br>
+<a href="https://en.cppreference.com/w/cpp/language/operators">cppreference — Operator overloading</a>,
+section "Binary arithmetic operators" intro paragraph on member vs. non-member —
+same free-function requirement applies to <code>&lt;&lt;</code> when the left operand
+is not your type.
+</div>
+
+<div class="nav">
+<a href="../lessons/0002-operator-bracket.html">← Lesson 2</a>
+<a href="../lessons/0004-binary-arithmetic.html">Lesson 4 →</a>
+<a href="../reference/glossary.html">Glossary</a>
+</div>
+
+</body>
+</html>

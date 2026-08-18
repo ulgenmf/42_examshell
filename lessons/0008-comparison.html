@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 8 — Comparison operators</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+
+<h1>Comparison: ==, !=, and ordering
+<span class="cluster-tag">Cluster: operators returning bool — vect2 needs 2 of them, bigint needs all 6</span>
+</h1>
+
+<p>
+Source: vect2 main — <code>v1 == v3</code>, <code>v1 == v1</code>,
+<code>v1 != v3</code>, <code>v1 != v1</code>. bigint main additionally needs
+<code>d &lt; a</code>, <code>d &lt;= a</code>, <code>d &gt; a</code>, <code>d &gt;= a</code>.
+</p>
+
+<div class="slot">
+<span class="label">Slot: declaration, inside the class, returns bool</span>
+<code>bool operator==(const vect2&amp; other) const;</code>
+<strong>Rule:</strong> same member-function shape as lesson 4's <code>operator+</code>
+— left operand implicit, right operand explicit parameter — but the return type is
+<code>bool</code>, not <code>vect2</code>. <code>const</code> on the function: neither
+side is modified by a comparison.
+</div>
+
+<div class="collision">
+<span class="label">Contrast: != is not automatically derived from ==</span>
+In C++ (before C++20), writing <code>operator==</code> does not give you
+<code>operator!=</code> for free — they are two separate overloads you must declare
+and define individually, even though <code>!=</code> is logically just
+<code>!(a == b)</code>. The usual pattern is to define <code>operator==</code> with
+the real comparison logic, then define <code>operator!=</code> as
+<code>return !(*this == other);</code> to avoid repeating the logic.
+</div>
+
+<p>
+For bigint's <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>,
+<code>&gt;=</code>: same slot and rule as <code>==</code>, four separate overloads,
+each returning <code>bool</code>. Same non-derivation problem applies — none of the six
+comparison operators are generated from another automatically in this language
+standard.
+</p>
+
+<h2>What you write (vect2 only, for now)</h2>
+<p>
+Add <code>operator==</code> and <code>operator!=</code> to
+<code>vect2.hpp</code>/<code>.cpp</code>. Recompile through the four comparison lines
+at the end of <code>vect2/main.cpp</code>. This completes everything vect2's main.cpp
+needs — full recompile and check every printed line against its comment.
+</p>
+
+<div class="primary-source">
+<span class="label">Primary source</span><br>
+<a href="https://en.cppreference.com/w/cpp/language/operators">cppreference — Operator overloading</a>,
+"Comparison operators".
+</div>
+
+<div class="nav">
+<a href="../lessons/0007-increment-decrement.html">← Lesson 7</a>
+<a href="../lessons/0009-const-correctness.html">Lesson 9 →</a>
+<a href="../reference/glossary.html">Glossary</a>
+</div>
+
+</body>
+</html>

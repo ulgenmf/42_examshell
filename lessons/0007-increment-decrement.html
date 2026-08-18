@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 7 — Pre/post increment and decrement</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+
+<h1>++ and --, prefix vs. postfix
+<span class="cluster-tag">Cluster: 2 tokens, 4 overloads, 1 signature trick to tell them apart</span>
+</h1>
+
+<p>
+Source: vect2 main — <code>v4++</code>, <code>++v4</code>, <code>v4--</code>,
+<code>--v4</code>, with the expected values showing the difference:
+</p>
+<pre><code>v4++  // prints 2,3 (the value BEFORE incrementing)
+++v4  // prints 3,4 (the value AFTER incrementing)</code></pre>
+
+<h2>Prefix: value after the change</h2>
+<div class="slot">
+<span class="label">Slot: declaration, inside the class, no parameters</span>
+<code>vect2&amp; operator++();</code>
+<strong>Rule:</strong> modifies the object in place, then returns a reference to
+itself (same reasoning as lesson 6's <code>+=</code>) — the returned value reflects
+the state after modification.
+</div>
+
+<h2>Postfix: value before the change</h2>
+<div class="collision">
+<span class="label">Contrast: same name, ++ has no way to write "prefix" or "postfix" in the signature</span>
+C++ has no keyword for this distinction. The chosen convention is: postfix takes one
+<code>int</code> parameter that is never used for anything — its only job is to make
+the parameter list different from prefix's, so the compiler can tell the two
+overloads apart. Calling <code>v4++</code> passes <code>0</code> for that parameter
+automatically; you never supply it yourself.
+</div>
+
+<div class="slot">
+<span class="label">Slot: declaration, inside the class, one unused int parameter</span>
+<code>vect2 operator++(int);</code>
+<strong>Rule:</strong> before modifying, save a copy of the current state
+(<code>vect2 before = *this;</code>), modify <code>*this</code> the same way prefix
+does, then <code>return before;</code> — by value, not by reference, since
+<code>before</code> is a local variable that stops existing once the function
+returns; returning a reference to it would refer to destroyed memory.
+</div>
+
+<p>Same two-overload pattern for <code>operator--()</code> / <code>operator--(int)</code>.</p>
+
+<h2>What you write</h2>
+<p>
+Add all four: <code>operator++()</code>, <code>operator++(int)</code>,
+<code>operator--()</code>, <code>operator--(int)</code>. Recompile through the four
+increment/decrement lines and check the printed values match the comments exactly
+(this is where prefix/postfix mistakes show up immediately).
+</p>
+
+<div class="primary-source">
+<span class="label">Primary source</span><br>
+<a href="https://en.cppreference.com/w/cpp/language/operator_incdec">cppreference — Increment/decrement operators</a>.
+</div>
+
+<div class="nav">
+<a href="../lessons/0006-compound-assignment.html">← Lesson 6</a>
+<a href="../lessons/0008-comparison.html">Lesson 8 →</a>
+<a href="../reference/glossary.html">Glossary</a>
+</div>
+
+</body>
+</html>

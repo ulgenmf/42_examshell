@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 10 — operator= and the four-function set</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+
+<h1>operator=, and the required four-function set
+<span class="cluster-tag">Cluster: what makes a class fully copyable and destructible — required by polyset's subject text directly</span>
+</h1>
+
+<p>
+Not exercised by vect2's main.cpp directly (the compiler-generated version already
+works for vect2 since it has no pointer members), but polyset's subject states
+explicitly: "All classes should be under orthodox canonical form." This lesson
+defines that term precisely — it is 42-specific terminology, not standard C++
+wording, so no external source names it exactly this way.
+</p>
+
+<h2>The four functions</h2>
+<p>A class in orthodox canonical form declares all four of the following, even if some bodies are trivial:</p>
+
+<div class="slot">
+<span class="label">1. Default constructor</span>
+<code>vect2();</code> — covered in lesson 1.
+</div>
+<div class="slot">
+<span class="label">2. Copy constructor</span>
+<code>vect2(const vect2&amp; other);</code> — covered in lesson 1. Constructs a new
+object from an existing one.
+</div>
+<div class="slot">
+<span class="label">3. Copy assignment operator</span>
+<code>vect2&amp; operator=(const vect2&amp; other);</code>
+<strong>Rule:</strong> called when an <em>already-existing</em> object is assigned a
+new value: <code>existing = other;</code> (contrast with lesson 1's copy-initialization,
+<code>Type x = y;</code>, which is construction, not this). Copies each member from
+<code>other</code> into <code>*this</code>, then returns <code>*this</code> by
+reference — same reference-return reasoning as lesson 6, needed so
+<code>a = b = c;</code> chains correctly.
+</div>
+<div class="slot">
+<span class="label">4. Destructor</span>
+<code>~vect2();</code>
+<strong>Rule:</strong> class name preceded by <code>~</code>, no parameters, no return
+type. Runs automatically when the object's lifetime ends (goes out of scope, or is
+<code>delete</code>d if heap-allocated). For a class with no pointer members, the
+compiler-generated destructor is already correct and an empty body
+<code>~vect2() {}</code> is enough to declare — the requirement is that it exists
+explicitly, not that it does unusual work.
+</div>
+
+<div class="collision">
+<span class="label">Why this matters more for bigint/polyset than vect2</span>
+vect2 stores two plain <code>int</code>s — the compiler-generated versions of all four
+functions already do the right thing (copy each int, nothing to release on
+destruction). Once a class stores a pointer to owned memory (a dynamically-sized digit
+array for bigint, for example) or is used as a base class (polyset), the
+compiler-generated versions become wrong or unsafe, and writing all four yourself
+stops being optional. Deferred: the specific pointer-ownership rule, until bigint.
+</div>
+
+<h2>What you write</h2>
+<p>
+Add an explicit default constructor (if not already present as a separate function
+from the copy constructor), copy constructor, <code>operator=</code>, and destructor
+to <code>vect2.hpp</code>/<code>.cpp</code>, even though vect2 does not strictly need
+them yet — this is the pattern that must be reflexive before bigint and polyset,
+where it stops being optional.
+</p>
+
+<div class="primary-source">
+<span class="label">Primary source</span><br>
+<a href="https://en.cppreference.com/w/cpp/language/rule_of_three">cppreference — Rule of three/five/zero</a>.
+The 42-specific term "orthodox canonical form" maps to what this page calls the
+"Rule of Three" (ctor/copy-ctor/copy-assignment) plus an explicit destructor.
+</div>
+
+<div class="nav">
+<a href="../lessons/0009-const-correctness.html">← Lesson 9</a>
+<a href="../lessons/0011-inheritance-and-abstract-classes.html">Lesson 11 →</a>
+<a href="../reference/glossary.html">Glossary</a>
+</div>
+
+</body>
+</html>

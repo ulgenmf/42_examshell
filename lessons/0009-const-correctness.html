@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 9 — const, three positions</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+
+<h1>const, three positions
+<span class="cluster-tag">Cluster: one keyword, three unrelated rules depending on where it sits</span>
+</h1>
+
+<p>
+You have already written all three without a name for them (lessons 1, 2, 4). This
+lesson names each one so the rule is explicit instead of copied by pattern-matching.
+</p>
+
+<h2>Position 1 — on a variable declaration</h2>
+<div class="slot">
+<span class="label">Slot: const Type name(...);</span>
+<code>const vect2 v3(v2);</code>
+<strong>Rule:</strong> <code>v3</code> cannot be reassigned, and no non-const member
+function can be called on it (only functions marked <code>const</code>, position 3
+below, are callable on it). This is enforced at compile time, not runtime.
+</div>
+
+<h2>Position 2 — on a reference parameter</h2>
+<div class="slot">
+<span class="label">Slot: (const Type&amp; name)</span>
+<code>operator+(const vect2&amp; other)</code>
+<strong>Rule:</strong> <code>other</code> is a reference (no copy made — cheaper for
+anything larger than a couple of ints) but the function promises not to modify what
+<code>other</code> refers to. Without <code>const</code> here, the function could not
+accept a <code>const vect2</code> argument, and <code>a + b</code> in bigint's main
+would fail to compile since <code>a</code> is declared <code>const bigint a(42);</code>.
+</div>
+
+<h2>Position 3 — on a member function, after the parameter list</h2>
+<div class="slot">
+<span class="label">Slot: ReturnType name(...) const;</span>
+<code>int operator[](int index) const;</code>
+<strong>Rule:</strong> promises this function does not modify the object it is called
+on (<code>*this</code> is treated as const inside the function body). This is the
+only thing that makes it legal to call the function on a const object — a non-const
+member function cannot be called on a const object at all, regardless of what the
+function body actually does.
+</div>
+
+<div class="collision">
+<span class="label">Contrast: all three read left-to-right differently</span>
+<code>const vect2&amp; x</code> — const binds to what's on its immediate right
+(<code>vect2</code>): "reference to a const vect2." <code>int foo() const;</code> —
+const after the closing parenthesis binds to the function itself, not to the return
+type or any parameter: "this function does not modify the object." Same keyword,
+position determines which of two unrelated things it restricts — the object being
+referred to, or the function's permission to modify.
+</div>
+
+<h2>What you check</h2>
+<p>
+Re-read every function you wrote in lessons 1–8. For each: does it modify the
+object's own components? If no, it is missing <code>const</code> at position 3 unless
+already present. Does it take another <code>vect2</code> as a parameter? If yes, that
+parameter should be <code>const vect2&amp;</code> unless you have a specific reason
+it needs to modify the argument (none of vect2's operators do).
+</p>
+
+<div class="primary-source">
+<span class="label">Primary source</span><br>
+<a href="https://en.cppreference.com/w/cpp/language/cv">cppreference — const/volatile type qualifiers</a>,
+read only the <code>const</code>-related examples, skip <code>volatile</code> entirely
+(not used in these exercises).
+</div>
+
+<div class="nav">
+<a href="../lessons/0008-comparison.html">← Lesson 8</a>
+<a href="../lessons/0010-copy-assignment-and-canonical-form.html">Lesson 10 →</a>
+<a href="../reference/glossary.html">Glossary</a>
+</div>
+
+</body>
+</html>

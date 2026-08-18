@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 5 — Unary operator-</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+
+<h1>Unary operator-
+<span class="cluster-tag">Cluster: same symbol as lesson 4's binary minus, different parameter count, different rule</span>
+</h1>
+
+<p>Source: vect2 main, <code>-v2</code>.</p>
+
+<div class="collision">
+<span class="label">Contrast: unary - vs. binary - (lesson 4)</span>
+<code>-v2</code> has one operand. <code>v1 - v1</code> has two. Both use the token
+<code>-</code>. C++ treats these as two entirely separate operator overloads,
+distinguished purely by parameter count — declaring one does not declare the other.
+</div>
+
+<div class="slot">
+<span class="label">Slot: declaration, inside the class, zero parameters</span>
+<code>vect2 operator-() const;</code>
+<strong>Rule:</strong> zero explicit parameters — the single operand is the object the
+function is called on, implicitly. Returns a new <code>vect2</code> with both
+components negated. <code>const</code> because negating does not modify the original
+(<code>-v2</code> must leave <code>v2</code> unchanged).
+</div>
+
+<h2>What you write</h2>
+<p>
+Add <code>operator-()</code> (no parameters) to <code>vect2.hpp</code>/<code>.cpp</code>,
+alongside the two-parameter <code>operator-</code> from lesson 4. Recompile through
+<code>std::cout &lt;&lt; "-v2: " &lt;&lt; -v2</code>.
+</p>
+
+<div class="primary-source">
+<span class="label">Primary source</span><br>
+<a href="https://en.cppreference.com/w/cpp/language/operators">cppreference — Operator overloading</a>,
+"Unary arithmetic operators".
+</div>
+
+<div class="nav">
+<a href="../lessons/0004-binary-arithmetic.html">← Lesson 4</a>
+<a href="../lessons/0006-compound-assignment.html">Lesson 6 →</a>
+<a href="../reference/glossary.html">Glossary</a>
+</div>
+
+</body>
+</html>

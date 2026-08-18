@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 4 — Binary arithmetic operators</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+
+<h1>Binary arithmetic: +, -, * by scalar
+<span class="cluster-tag">Cluster: producing a new object from two operands — member is enough until operand order flips</span>
+</h1>
+
+<p>
+Source: vect2 main —
+<code>a + b</code>, <code>v3 + v3 * 2</code>, <code>3 * v2</code>,
+<code>v1 - v1 + v1</code>. bigint main has the same shape for <code>a + b</code>.
+</p>
+
+<h2>The default: member function is enough</h2>
+<div class="slot">
+<span class="label">Slot: declaration, inside the class</span>
+<code>vect2 operator+(const vect2&amp; other) const;</code>
+<strong>Rule:</strong> the left operand (<code>v3</code> in <code>v3 + v3</code>) is
+the object the function is called on implicitly; the right operand is the explicit
+parameter. Trailing <code>const</code> means this function does not modify the object
+it's called on — required here since <code>a</code> in bigint's main is itself
+declared <code>const bigint a(42);</code> and still needs to support <code>a + b</code>.
+Return type is a new <code>vect2</code> by value (not a reference) — the result is a
+freshly computed object, nothing existing to refer back to.
+</div>
+
+<p>
+The same slot and rule apply to <code>operator-</code>
+(<code>v1 - v1 + v1</code>) and to <code>operator*</code> when the scalar is on the
+right: <code>v3 * 2</code> becomes <code>v3.operator*(2)</code> — <code>2</code>
+converts to the parameter's declared type (<code>int</code>), no extra work needed.
+</p>
+
+<div class="collision">
+<span class="label">Contrast: 3 * v2 — scalar on the left</span>
+<code>3 * v2</code> would desugar to <code>3.operator*(v2)</code> if <code>*</code>
+had to be a member function — but <code>3</code> is a plain <code>int</code>, which has
+no member functions at all. A member <code>operator*</code> only fires when your class
+is the <em>left</em> operand. When the left operand is a built-in type, the only
+option is the same fix as lesson 3's <code>operator&lt;&lt;</code>: a
+<span class="term" title="A function declared outside any class, taking both operands as explicit parameters.">free function</span>.
+</span>
+</div>
+
+<div class="slot">
+<span class="label">Slot: free function, not inside the class</span>
+<code>vect2 operator*(int scalar, const vect2&amp; v);</code>
+<strong>Rule:</strong> both operands are explicit parameters, in left-to-right order
+matching the expression <code>3 * v2</code>. Implement it by calling the member
+version you already have (<code>return v * scalar;</code>) — no new arithmetic logic,
+just a second entry point for the reversed operand order.
+</div>
+
+<h2>What you write</h2>
+<p>
+In <code>vect2/vect2.hpp</code>/<code>.cpp</code>: member <code>operator+</code>,
+member <code>operator-</code>, member <code>operator*(int)</code>, and the one free
+function <code>operator*(int, const vect2&amp;)</code>. Recompile through
+<code>v3 + v3 * 2</code>, <code>3 * v2</code>, <code>v1 - v1 + v1</code>.
+</p>
+
+<div class="primary-source">
+<span class="label">Primary source</span><br>
+<a href="https://en.cppreference.com/w/cpp/language/operators">cppreference — Operator overloading</a>,
+"Binary arithmetic operators" — read the note on why commutative operators with a
+built-in left operand need a non-member overload.
+</div>
+
+<div class="nav">
+<a href="../lessons/0003-stream-output.html">← Lesson 3</a>
+<a href="../lessons/0005-unary-minus.html">Lesson 5 →</a>
+<a href="../reference/glossary.html">Glossary</a>
+</div>
+
+</body>
+</html>

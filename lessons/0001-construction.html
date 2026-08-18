@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 1 — Construction</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+
+<h1>Constructing a vect2
+<span class="cluster-tag">Cluster: how an object comes into existence — 4 related forms, 1 mechanism</span>
+</h1>
+
+<p>
+Source: <code>vect2/main.cpp</code>, lines 6–9 (from <code>test/subs.txt</code>).
+These four lines all do the same kind of thing — make a <code>vect2</code> object exist —
+but each hits a different <strong>slot</strong> in the grammar. Same underlying mechanism,
+different rule per slot.
+</p>
+
+<pre><code>vect2 v1;            // line A
+vect2 v2(1, 2);       // line B
+const vect2 v3(v2);   // line C
+vect2 v4 = v2;        // line D</code></pre>
+
+<h2>The mechanism: constructor</h2>
+<p>
+A <span class="term" title="A function with the same name as the class, no return type, that runs once when an object of that class is created.">constructor</span>
+is a function with the same name as the class, no return type, that runs exactly once
+— at the moment an object is created. Every line above triggers <em>some</em> constructor.
+Which one, and with what syntax, is what differs.
+</p>
+
+<h2>Slot A — default construction</h2>
+<div class="slot">
+<span class="label">Slot: Type name;</span>
+<code>vect2 v1;</code> — no parentheses, no arguments.<br>
+<strong>Rule:</strong> this calls the <span class="term" title="A constructor that takes zero arguments.">default constructor</span> —
+the constructor that takes zero arguments. If you write no constructors at all,
+the compiler generates one for you automatically. If you write <em>any</em> constructor
+yourself, the compiler stops generating this one — you must write it yourself if you
+still want <code>vect2 v1;</code> to compile.
+</div>
+
+<h2>Slot B — parameterised, direct-initialization</h2>
+<div class="slot">
+<span class="label">Slot: Type name(args);</span>
+<code>vect2 v2(1, 2);</code>
+<strong>Rule:</strong> this calls whichever constructor's parameter list matches
+<code>(1, 2)</code> — here, a constructor taking two <code>int</code>s. This syntax
+is called <span class="term" title="Constructing an object by directly supplying constructor arguments in parentheses after the variable name.">direct-initialization</span>.
+</div>
+
+<div class="collision">
+<span class="label">Named collision (per this repo's teaching rule)</span>
+<code>Type name(args)</code> in a <strong>declaration slot</strong> (a type name immediately
+to the left) is construction. <code>existing.method(args)</code> in an
+<strong>invocation slot</strong> (a variable name, already existing, to the left of the dot)
+is a method call. Same parenthesis shape, unrelated rule — the thing that
+disambiguates them is what sits immediately to the left: a type, or an existing object.
+</div>
+
+<h2>Slot C — copy construction, direct-init, plus <code>const</code></h2>
+<div class="slot">
+<span class="label">Slot: const Type name(existing);</span>
+<code>const vect2 v3(v2);</code>
+<strong>Rule:</strong> passing an existing <code>vect2</code> (<code>v2</code>) as the
+sole argument selects the <span class="term" title="A constructor whose single parameter is a reference to an existing object of the same class; it initializes the new object as a field-by-field duplicate.">copy constructor</span> —
+a constructor whose job is to duplicate an existing object's state into the new one.
+This is still direct-initialization syntax (parentheses), same slot as B, but the
+argument type changes which overload of the constructor gets picked.
+</div>
+<p>
+<code>const</code> here sits in the <strong>declaration slot</strong>, to the left of the
+variable name: it means <code>v3</code> itself cannot be reassigned or have its
+non-const members changed after construction. (There are two other slots
+<code>const</code> can occupy in this codebase's exercises — deferred to a later lesson,
+noted in the glossary as a term to revisit.)
+</p>
+
+<h2>Slot D — copy construction, copy-initialization</h2>
+<div class="slot">
+<span class="label">Slot: Type name = existing;</span>
+<code>vect2 v4 = v2;</code>
+<strong>Rule:</strong> despite the <code>=</code>, this is <em>not</em> assignment —
+there is no <code>v4</code> yet for anything to be assigned into. This is
+<span class="term" title="Constructing an object using = syntax at the point of declaration; despite the =, it invokes a constructor, not operator=.">copy-initialization</span>:
+the compiler sees a brand-new variable being declared with an initial value, and calls
+the <strong>same copy constructor as slot C</strong>. Different syntax, same constructor
+as C — that's the collision worth holding onto: <code>Type x(y)</code> and
+<code>Type x = y</code> are two slots that can both resolve to the copy constructor.
+</div>
+
+<div class="collision">
+<span class="label">Named collision: this <code>=</code> vs. real assignment</span>
+<code>vect2 v4 = v2;</code> (declaration, <code>=</code> in the initializer position) calls
+the copy <strong>constructor</strong>. <code>v4 = v2;</code> on its own line, where
+<code>v4</code> already exists, would call <code>operator=</code> — the
+<span class="term" title="A member function overload of the = operator, invoked when assigning to an already-existing object.">copy assignment operator</span> —
+a completely different function. Same <code>=</code> symbol, resolved by whether the
+left side is being declared right now or already exists. (Full rule on
+<code>operator=</code> — separate lesson, once we reach polyset's orthodox canonical
+form requirement.)
+</div>
+
+<h2>What you write</h2>
+<p>
+Go to <code>vect2/vect2.hpp</code> and <code>vect2/vect2.cpp</code> in this repo. Declare
+and implement enough for all four lines above to compile:
+</p>
+<ul>
+<li>a default constructor (slot A)</li>
+<li>a constructor taking two <code>int</code>s (slot B)</li>
+<li>a copy constructor (slots C and D both route here — you write it once)</li>
+</ul>
+<p>
+You don't need <code>operator&lt;&lt;</code> or anything else yet to test this — just
+compile <code>vect2/main.cpp</code> up through line 9 (comment out the rest for now, or
+leave it; it won't compile fully until later lessons, that's expected). Confirm it
+builds and construction doesn't crash. Report back what you wrote and I'll check it
+against the rules above — not rewrite it for you.
+</p>
+
+<div class="primary-source">
+<span class="label">Primary source</span><br>
+<a href="https://en.cppreference.com/w/cpp/language/constructor">cppreference — Constructors and member initializer lists</a>.
+Read the "Default constructor," "Copy constructor," and "Initialization" sections —
+skip everything about templates, delegating constructors, and inheritance for now.
+</div>
+
+<p class="ask-teacher">
+Anything above unclear — ask me directly, don't guess. If a term still feels vague after
+reading the definition, that's a signal the definition needs to be sharper, not that
+you're missing something obvious.
+</p>
+
+<div class="nav">
+<a href="../reference/glossary.html">Glossary</a>
+</div>
+
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

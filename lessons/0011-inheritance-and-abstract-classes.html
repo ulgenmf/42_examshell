@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 11 — Inheritance and abstract classes</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+
+<h1>Inheritance and abstract classes
+<span class="cluster-tag">Cluster: polyset-specific grammar — everything before this lesson still applies inside these classes too</span>
+</h1>
+
+<p>
+Source: polyset's subject text (<code>test/subs.txt</code>). Classes involved:
+<code>bag</code> (abstract), <code>searchable_bag</code> (abstract, adds search),
+<code>array_bag</code> and <code>tree_bag</code> (concrete, each a different storage
+method), <code>searchable_array_bag</code> and <code>searchable_tree_bag</code> (must
+inherit from the array/tree implementation <em>and</em> implement the
+<code>searchable_bag</code> interface).
+</p>
+
+<h2>Declaring inheritance</h2>
+<div class="slot">
+<span class="label">Slot: class Derived : public Base { ... };</span>
+<code>class array_bag : public bag { ... };</code>
+<strong>Rule:</strong> a colon after the class name, followed by <code>public</code>
+and the base class name, means every non-private member of <code>bag</code> is
+available inside <code>array_bag</code> as if declared there directly. Multiple base
+classes are comma-separated in the same slot:
+<code>class searchable_array_bag : public array_bag, public searchable_bag { ... };</code>
+— required here since it must be both an <code>array_bag</code> and a
+<code>searchable_bag</code> at once.
+</div>
+
+<h2>Pure virtual functions — what makes a class abstract</h2>
+<div class="slot">
+<span class="label">Slot: ReturnType name(...) = 0;</span>
+<code>virtual void insert(int value) = 0;</code>
+<strong>Rule:</strong> <code>virtual</code> marks the function as overridable by a
+derived class. <code>= 0</code> at the end means this class declares the function
+exists but provides no body — no object of this exact class can ever be constructed
+(<code>bag b;</code> would fail to compile). A class becomes concrete (constructible)
+only once every inherited pure virtual function has an actual implementation
+somewhere in its inheritance chain.
+</div>
+
+<h2>Overriding in the derived class</h2>
+<div class="slot">
+<span class="label">Slot: ReturnType name(...) override;</span>
+<code>void insert(int value) override;</code>
+<strong>Rule:</strong> same name and parameter types as the base class's declaration,
+now with a real body, in the derived class. <code>override</code> is not required by
+the language but should always be written: it makes the compiler verify this function
+really does match a virtual function in the base class — without it, a typo in the
+parameter list silently creates an unrelated new function instead of an error.
+</div>
+
+<h2>Calling the base class constructor</h2>
+<div class="slot">
+<span class="label">Slot: Derived::Derived(args) : Base(args) { }</span>
+<code>array_bag::array_bag(const array_bag&amp; other) : bag(other) { ... }</code>
+<strong>Rule:</strong> a colon after the parameter list, before the function body,
+lists which base-class constructor to run first, with what arguments. Every derived
+object's construction runs the base class's constructor first, then the derived
+class's own constructor body — this is where you route to the specific base
+constructor when there is more than one available (default vs. copy, same as
+lesson 1's overload rule, just one level up the inheritance chain).
+</div>
+
+<div class="collision">
+<span class="label">Contrast: this changes nothing from lessons 1–10 — it adds one more layer</span>
+Inside <code>array_bag</code>, <code>searchable_bag</code>, and <code>set</code>,
+construction (lesson 1), <code>operator[]</code>/access patterns (lesson 2),
+<code>const</code> (lesson 9, explicitly required by the subject: "Don't forget the
+const"), and the four-function set (lesson 10, explicitly required: "orthodox
+canonical form") all still apply exactly as already learned. Inheritance is one
+additional slot on top, not a replacement mechanism.
+</div>
+
+<h2>What you write</h2>
+<p>
+Deferred until vect2 is fully compiled and passing (per the mission's stated order).
+When you reach polyset: <code>searchable_array_bag</code> and
+<code>searchable_tree_bag</code> first (single new base + interface each), then
+<code>set</code> (wraps a <code>searchable_bag</code> as a member, not a base class —
+a different relationship, worth its own lesson when you get there).
+</p>
+
+<div class="primary-source">
+<span class="label">Primary source</span><br>
+<a href="https://en.cppreference.com/w/cpp/language/abstract_class">cppreference — Abstract class</a>
+and <a href="https://en.cppreference.com/w/cpp/language/derived_class">cppreference — Derived classes</a>.
+</div>
+
+<div class="nav">
+<a href="../lessons/0010-copy-assignment-and-canonical-form.html">← Lesson 10</a>
+<a href="../reference/glossary.html">Glossary</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 2 — operator[]</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+
+<h1>operator[]
+<span class="cluster-tag">Cluster: element access — 1 operator, 2 uses (read and write)</span>
+</h1>
+
+<p>
+Source: vect2 main, lines: <code>v1[0]</code>, <code>v1[1]</code>, <code>v1[1] = 12;</code>,
+<code>v3[1]</code>.
+</p>
+
+<h2>The mechanism: operator[] is a member function</h2>
+<p>
+<code>x[i]</code> is defined by the compiler to mean <code>x.operator[](i)</code>.
+It must be a <span class="term" title="A function declared inside a class body, called on an instance using the dot or arrow operator, or via operator syntax like [] or +.">member function</span> —
+C++ does not allow a free-function form of <code>operator[]</code>.
+</p>
+
+<div class="slot">
+<span class="label">Slot: declaration, inside the class</span>
+<code>int&amp; operator[](int index);</code>
+<strong>Rule:</strong> return type <code>int&amp;</code> (a
+<span class="term" title="A reference: an alternate name for an existing variable, not a copy of it. Declared with &.">reference</span>
+to <code>int</code>, not a plain <code>int</code>) is what makes
+<code>v1[1] = 12;</code> valid. <code>v1[1]</code> evaluates to a reference to the
+actual stored int inside <code>v1</code> — assigning to that reference writes through
+to the object. If the return type were plain <code>int</code> (a copy), <code>v1[1] = 12;</code>
+would still compile but would assign into a temporary copy and change nothing inside
+<code>v1</code>.
+</div>
+
+<div class="collision">
+<span class="label">Contrast: v3[1] on a const object</span>
+<code>v3</code> is declared <code>const vect2 v3(v2);</code>. Calling <code>v3[1]</code>
+requires a second overload:
+<code>int operator[](int index) const;</code> — the trailing <code>const</code> after
+the parameter list marks this version as usable on a const object, and it must return
+by value or by const reference, never a plain non-const reference (a const object
+cannot expose a way to be modified). You need <strong>both</strong> overloads: one
+non-const (read/write), one const (read-only), same name, same parameter list,
+distinguished only by the trailing <code>const</code>.
+</div>
+
+<h2>What you write</h2>
+<p>
+In <code>vect2/vect2.hpp</code>: declare both overloads of <code>operator[]</code>.
+In <code>vect2/vect2.cpp</code>: implement both. Recompile against
+<code>vect2/main.cpp</code> through the lines using <code>v1[0]</code>, <code>v1[1]</code>,
+<code>v1[1] = 12;</code>, <code>v3[1]</code>.
+</p>
+
+<div class="primary-source">
+<span class="label">Primary source</span><br>
+<a href="https://en.cppreference.com/w/cpp/language/operators">cppreference — Operator overloading</a>,
+section "Array subscript operator". Ignore every other operator listed on that page for now.
+</div>
+
+<p class="ask-teacher">Ask directly if the reference-return rule is unclear before moving on — this rule reappears for every operator that needs to support chained assignment.</p>
+
+<div class="nav">
+<a href="../lessons/0001-construction.html">← Lesson 1</a>
+<a href="../lessons/0003-stream-output.html">Lesson 3 →</a>
+<a href="../reference/glossary.html">Glossary</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 6 — Compound assignment</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+
+<h1>Compound assignment: +=, -=, *=
+<span class="cluster-tag">Cluster: modify-in-place operators — 1 rule, and the rule that makes chaining work</span>
+</h1>
+
+<p>
+Source: vect2 main — <code>v2 += v3;</code>, <code>v1 -= v2;</code>,
+<code>v1 *= 42;</code>, and the chained form <code>v2 += v2 += v3;</code>.
+bigint main has <code>c += a</code>, <code>d &lt;&lt;= 4</code>, <code>d &gt;&gt;= (const bigint)2</code>
+— same rule, different operator tokens.
+</p>
+
+<h2>Difference from lesson 4's operator+</h2>
+<p>
+<code>operator+</code> (lesson 4) produces a new object and leaves both operands
+unchanged. <code>operator+=</code> modifies the left operand in place and produces no
+new object — it hands back the same object it just modified, so the expression itself
+still has a value to use.
+</p>
+
+<div class="slot">
+<span class="label">Slot: declaration, inside the class, returns a reference</span>
+<code>vect2&amp; operator+=(const vect2&amp; other);</code>
+<strong>Rule:</strong> return type is <code>vect2&amp;</code> — a reference to the
+object itself (<code>return *this;</code> — <code>this</code> is a pointer to the
+current object, <code>*this</code> is that object). No trailing <code>const</code>:
+this function changes the object's own components, so it cannot be called on a const
+object. Same shape for <code>operator-=</code> and <code>operator*=</code> (the
+right-hand parameter of <code>*=</code> is <code>int</code>, not <code>vect2</code>).
+</div>
+
+<div class="collision">
+<span class="label">Contrast: why v2 += v2 += v3 only works because of the reference return</span>
+Evaluated right to left: <code>v2 += v3</code> runs first, modifies <code>v2</code>,
+and returns a reference to <code>v2</code> itself (not a copy). The outer
+<code>v2 += (that reference)</code> then reads <code>v2</code>'s new value and adds it
+again. If <code>operator+=</code> returned <code>vect2</code> by value instead of
+<code>vect2&amp;</code>, the chained line would still compile (a copy is still usable
+in the same way) but would be doing needless extra copying — for these exercises the
+reference return is what the subject's expected output depends on for
+<code>d &lt;&lt;= 4</code> style chained/nested usage in bigint.
+</div>
+
+<h2>What you write</h2>
+<p>
+Add <code>operator+=</code>, <code>operator-=</code>, <code>operator*=(int)</code> to
+<code>vect2.hpp</code>/<code>.cpp</code>. Recompile through
+<code>v2 += v3;</code>, <code>v1 -= v2;</code>, <code>v2 += v2 += v3;</code>,
+<code>v1 *= 42;</code>.
+</p>
+
+<div class="primary-source">
+<span class="label">Primary source</span><br>
+<a href="https://en.cppreference.com/w/cpp/language/operator_assignment">cppreference — Assignment operators</a>,
+section "Compound assignment".
+</div>
+
+<div class="nav">
+<a href="../lessons/0005-unary-minus.html">← Lesson 5</a>
+<a href="../lessons/0007-increment-decrement.html">Lesson 7 →</a>
+<a href="../reference/glossary.html">Glossary</a>
+</div>
+
+</body>
+</html>
